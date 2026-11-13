@@ -13,7 +13,7 @@ public sealed class KeyboardHook : IDisposable
 
     private delegate IntPtr LowLevelKeyboardProc(int nCode, IntPtr wParam, IntPtr lParam);
 
-    // Делегат хранится в поле, чтобы GC не удалил его, пока нативная сторона его использует.
+    // Делегат хранится в поле, чтобы сборщик мусора не удалил его, пока нативная сторона его использует.
     private readonly LowLevelKeyboardProc _callback;
     private IntPtr _hookHandle = IntPtr.Zero;
 
@@ -68,7 +68,7 @@ public sealed class KeyboardHook : IDisposable
                 {
                     GetWindowThreadProcessId(foregroundWindow, out uint processId);
 
-                    // Ловим только события нашего приложения
+                    // Обрабатываем только события нашего процесса.
                     if (processId == (uint)Environment.ProcessId)
                     {
                         Keys key = (Keys)keyboardInfo.vkCode;
@@ -82,6 +82,7 @@ public sealed class KeyboardHook : IDisposable
             }
         }
 
+        // Передаем событие дальше, чтобы система не заблокировалась.
         return CallNextHookEx(_hookHandle, nCode, wParam, lParam);
     }
 

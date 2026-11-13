@@ -1,5 +1,3 @@
-using WinFormsApp1;
-
 namespace KeyboardHookLab;
 
 internal static class Program
